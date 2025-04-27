@@ -96,11 +96,15 @@ Z = np.zeros_like(X)
 
 for i in range(len(x)):
     for j in range(len(y)):
-        heating.input['temperature'] = x[i]
-        heating.input['humidity'] = y[j]
-        heating.input['time_of_day'] = 12
-        heating.compute()
-        Z[j, i] = heating.output['power']
+        try:
+            heating.input['temperature'] = x[i]
+            heating.input['humidity'] = y[j]
+            heating.input['time_of_day'] = 12  # фиксируем день
+            heating.compute()
+            Z[j, i] = heating.output['power']  # убедитесь, что ключ 'power' существует
+        except KeyError:
+            print(f"Ошибка при температуре {x[i]} и влажности {y[j]}")
+            Z[j, i] = 0
 
 ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='viridis')
 ax.set_xlabel('Температура (°C)')
